@@ -11,6 +11,6 @@ namespace Crawler_ItJobs_Portugal.Services
 {
     public interface IEmailService
     {
-        void EnviarEmail (JobsModel job);
+        void EnviarEmail (JobsModel job, List<string> emailsJaEnviados);
     }
 }

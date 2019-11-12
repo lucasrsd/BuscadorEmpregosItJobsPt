@@ -23,16 +23,26 @@ namespace Crawler_ItJobs_Portugal.Controllers.V1
         public async Task<IActionResult> Calcular ()
         {
             var lista = new List<object> ();
+            var listaEmails = new List<string> ();
             for (int x = 3; x < 20; x++)
             {
                 var result = this.SearchService.ListarVagasUrls (x);
+
+                foreach (var item in result.Data)
+                {
+                    if (item.EmailsRelacionados != null && item.EmailsRelacionados.Any ())
+                    {
+                        listaEmails.Add (item.EmailsRelacionados.FirstOrDefault ());
+                    }
+                }
+
                 lista.Add (result);
                 foreach (var item in result.Data)
                 {
-                    this.EmailService.EnviarEmail (item);
+                    this.EmailService.EnviarEmail (item, listaEmails);
                 }
             }
-            
+
             return Ok (lista);
         }
     }

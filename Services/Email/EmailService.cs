@@ -14,7 +14,7 @@ namespace Crawler_ItJobs_Portugal.Services
 {
     public class EmailService : IEmailService
     {
-        public void EnviarEmail (JobsModel job)
+        public void EnviarEmail (JobsModel job, List<string> emailsJaEnviados)
         {
             try
             {
@@ -23,6 +23,13 @@ namespace Crawler_ItJobs_Portugal.Services
                     Console.WriteLine ($"{DateTime.Now} Sem emails encontrados para: {job.Titulo} - Emails: {string.Join(',', job.EmailsRelacionados)}");
                     return;
                 }
+
+                if (emailsJaEnviados.Contains (job.EmailsRelacionados.FirstOrDefault ()))
+                {
+                    Console.WriteLine ($"{DateTime.Now} Destinatario já enviado! {job.Titulo} - Emails: {string.Join(',', job.EmailsRelacionados)}");
+                    return;
+                }
+
                 System.Threading.Thread.Sleep (3000);
 
                 Console.WriteLine ($"{DateTime.Now} Enviando email para: {job.Titulo} - Emails: {string.Join(',', job.EmailsRelacionados)}");
