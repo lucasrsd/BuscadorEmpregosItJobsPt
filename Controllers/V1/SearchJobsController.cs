@@ -12,20 +12,28 @@ namespace Crawler_ItJobs_Portugal.Controllers.V1
     public class SearchJobsController : ControllerBase
     {
         private readonly ISearchService SearchService;
-        public SearchJobsController (ISearchService searchService)
+        private readonly IEmailService EmailService;
+        public SearchJobsController (ISearchService searchService, IEmailService emailService)
         {
             this.SearchService = searchService;
+            this.EmailService = emailService;
         }
 
         [HttpPost]
         public async Task<IActionResult> Calcular ()
         {
-            var processamento = DateTime.Now.ToString ("ddMMyyyyHHmmss");
-            for (var x = 1; x < 50; x++)
+            var lista = new List<object> ();
+            for (int x = 3; x < 20; x++)
             {
                 var result = this.SearchService.ListarVagasUrls (x);
+                lista.Add (result);
+                foreach (var item in result.Data)
+                {
+                    this.EmailService.EnviarEmail (item);
+                }
             }
-            return Ok ();
+            
+            return Ok (lista);
         }
     }
 }

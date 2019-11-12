@@ -37,8 +37,13 @@ namespace Crawler_ItJobs_Portugal.Services
             var htmlDoc = new HtmlAgilityPack.HtmlDocument ();
             htmlDoc.LoadHtml (response.Content);
 
+            var nodes = htmlDoc.DocumentNode.SelectNodes (@"//div[@class='list-title']");
+
+            if (nodes == null)
+                return new BaseResponse<IList<JobsModel>> (false, $"Nenhum registro encontrado na pagina {page}");
+
             var jobs = htmlDoc.DocumentNode.SelectNodes (
-                    @"//div[@class='list-title']/a")
+                    @" //div[@class='list-title']/a")
                 .Select (li => li);
 
             foreach (var job in jobs)
@@ -46,7 +51,13 @@ namespace Crawler_ItJobs_Portugal.Services
                 var url = this.BaseUrl + job.Attributes["href"].Value;
                 var titulo = job.Attributes["title"].Value;
 
-                result.Add (new JobsModel (url, titulo, page));
+                result.Add (new JobsModel ()
+                {
+                    Url = url,
+                        Titulo = titulo,
+                        Pagina = page
+                });
+                
             }
 
             if (result != null)
@@ -90,39 +101,9 @@ namespace Crawler_ItJobs_Portugal.Services
                     var conteudo = $"{DateTime.Now} Pagina: {job.Pagina}  Titulo: {job.Titulo}  Url: {job.Url}  Email: {email}{Environment.NewLine}";
                     Console.WriteLine (conteudo);
                     System.IO.File.AppendAllText ($@"C:\JobsCrawler\Teste.txt", conteudo);
-                    job.EmailsRelacionados.Add (email);
+                    job.EmailsRelacionados.Add(email);
                 }
             }
-
-            //var jobsTexts = htmlDoc.DocumentNode.SelectNodes ("//div[contains(@class, 'content-block')]");
-
-            // foreach (var text in jobsTexts)
-            // {
-            //     foreach (var child in text.ChildNodes)
-            //     {
-            //         if (child.ChildNodes != null)
-            //         {
-            //             var childMail = child.ChildNodes.Where (x => x.Attributes["href"] != null);
-
-            //             if (childMail.Any ())
-            //             {
-            //                 foreach (var mail in childMail)
-            //                 {
-            //                     var spanMail = mail.ChildNodes.FirstOrDefault ();
-            //                     var valueMailEncoded = spanMail.Attributes["data-cfemail"];
-            //                     if (valueMailEncoded != null)
-            //                     {
-            //                         var email = Helpers.MailDecoder.cfDecodeEmail (valueMailEncoded.Value);
-            //                         var conteudo = $"{DateTime.Now} Pagina: {job.Pagina}-{job.Titulo}-{job.Url}-{email}{Environment.NewLine}";
-            //                         Console.WriteLine(conteudo);
-            //                         System.IO.File.AppendAllText ($@"C:\JobsCrawler\Teste.txt", conteudo);
-            //                         job.EmailsRelacionados.Add (email);
-            //                     }
-            //                 }
-            //             }
-            //         }
-            //     }
-            // }
 
             return job;
         }

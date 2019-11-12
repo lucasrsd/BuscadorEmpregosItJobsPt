@@ -27,7 +27,7 @@ namespace Crawler_ItJobs_Portugal
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices (IServiceCollection services)
         {
-            //services.AddServices (typeof (Startup).GetTypeInfo ().Assembly);
+            services.AddServices (typeof (Startup).GetTypeInfo ().Assembly);
             services.AddScoped<ISearchService> (service => new SearchService (Configuration.GetValue<string>("BaseUrl")));
             services.AddMvc ().SetCompatibilityVersion (CompatibilityVersion.Version_2_2);
         }
