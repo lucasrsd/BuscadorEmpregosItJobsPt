@@ -28,18 +28,19 @@ namespace Crawler_ItJobs_Portugal.Controllers.V1
             {
                 var result = this.SearchService.ListarVagasUrls (x);
 
-                foreach (var item in result.Data)
-                {
-                    if (item.EmailsRelacionados != null && item.EmailsRelacionados.Any ())
-                    {
-                        listaEmails.Add (item.EmailsRelacionados.FirstOrDefault ());
-                    }
-                }
-
                 lista.Add (result);
                 foreach (var item in result.Data)
                 {
                     this.EmailService.EnviarEmail (item, listaEmails);
+
+                    // ToDo - Arrumar isto
+                    // foreach (var dadosEmail in result.Data)
+                    // {
+                    //     if (dadosEmail.EmailsRelacionados != null && dadosEmail.EmailsRelacionados.Any ())
+                    //     {
+                    //         listaEmails.Add (dadosEmail.EmailsRelacionados.FirstOrDefault ());
+                    //     }
+                    // }
                 }
             }
 
