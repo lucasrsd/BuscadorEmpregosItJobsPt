@@ -20,6 +20,7 @@ namespace Crawler_ItJobs_Portugal.Controllers.V1
         public async Task<IActionResult> Post ([FromBody] SearchJobModel searchJobModel)
         {
             Console.WriteLine ($"{DateTime.Now}  ** INICIADO ** -> Tag: {searchJobModel.Tag}, Pagina inicial: {searchJobModel.PageStart}, Pagina Final: {searchJobModel.PageEnd}");
+            
             var coreResult = this.JobSearchCore.SearchJobs (searchJobModel);
 
             Console.WriteLine ($"{DateTime.Now}  ** FINALIZADO ** -> Tag: {searchJobModel.Tag}, Pagina inicial: {searchJobModel.PageStart}, Pagina Final: {searchJobModel.PageEnd}");
