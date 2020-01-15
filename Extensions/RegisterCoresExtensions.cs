@@ -6,17 +6,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class RegisterServicesExtensions
+    public static class RegisterCoresExtensions
     {
-        public static void AddServices (this IServiceCollection services, Assembly assembly)
+        public static void AddCores (this IServiceCollection services, Assembly assembly)
         {
 
             var types = assembly.GetTypes ();
 
             types.Where (t => !t.GetTypeInfo ().IsAbstract &&
-                    t.Name.EndsWith ("Service", StringComparison.CurrentCultureIgnoreCase) &&
+                    t.Name.EndsWith ("Core", StringComparison.CurrentCultureIgnoreCase) &&
                     t.GetInterfaces ().Length == 1 &&
-                    t.GetInterfaces () [0].Name.EndsWith ("Service", StringComparison.CurrentCultureIgnoreCase))
+                    t.GetInterfaces () [0].Name.EndsWith ("Core", StringComparison.CurrentCultureIgnoreCase))
                 .ToList ()
                 .ForEach (t =>
                 {

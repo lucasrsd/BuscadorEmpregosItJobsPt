@@ -7,10 +7,10 @@ using Crawler_ItJobs_Portugal.Application.Base;
 using Crawler_ItJobs_Portugal.Models.Search;
 using RestSharp;
 
-namespace Crawler_ItJobs_Portugal.Services.Search
+namespace Crawler_ItJobs_Portugal.Core.JobSearch
 {
-    public interface ISearchService
+    public interface IJobSearchCore
     {
-        BaseResponse<List<JobsModel>> BuscarVagasPagina (string tag, int page);
+        BaseResponse<SearchJobResult> SearchJobs (SearchJobModel searchJobModel);
     }
 }

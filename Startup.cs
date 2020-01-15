@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
-using Crawler_ItJobs_Portugal.Services;
+using Crawler_ItJobs_Portugal.Models.Email;
+using Crawler_ItJobs_Portugal.Services.Search;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Crawler_ItJobs_Portugal
 {
@@ -28,7 +23,9 @@ namespace Crawler_ItJobs_Portugal
         public void ConfigureServices (IServiceCollection services)
         {
             services.AddServices (typeof (Startup).GetTypeInfo ().Assembly);
+            services.AddCores (typeof (Startup).GetTypeInfo ().Assembly);
             services.AddScoped<ISearchService> (service => new SearchService (Configuration.GetValue<string>("BaseUrl")));
+            services.Configure<EmailOptions>(Configuration.GetSection("EmailOptions"));
             services.AddMvc ().SetCompatibilityVersion (CompatibilityVersion.Version_2_2);
         }
 

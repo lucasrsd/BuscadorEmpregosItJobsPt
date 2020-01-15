@@ -9,7 +9,7 @@ using Crawler_ItJobs_Portugal.Models.Search;
 using Microsoft.Extensions.Logging;
 using RestSharp;
 
-namespace Crawler_ItJobs_Portugal.Services
+namespace Crawler_ItJobs_Portugal.Services.Search
 {
     public class SearchService : ISearchService
     {
@@ -21,10 +21,10 @@ namespace Crawler_ItJobs_Portugal.Services
         private string BaseUrl { get; set; }
         private ILogger<SearchService> Logger { get; set; }
 
-        public BaseResponse<IList<JobsModel>> ListarVagasUrls (int page)
+        public BaseResponse<List<JobsModel>> BuscarVagasPagina (string tag, int page)
         {
             var result = new List<JobsModel> ();
-            var uri = new Uri (this.BaseUrl + $"/emprego/.net?&sort=date&page={page}");
+            var uri = new Uri (this.BaseUrl + $"/emprego/{tag}?&sort=date&page={page}");
 
             var client = new RestClient (uri);
 
@@ -40,7 +40,7 @@ namespace Crawler_ItJobs_Portugal.Services
             var nodes = htmlDoc.DocumentNode.SelectNodes (@"//div[@class='list-title']");
 
             if (nodes == null)
-                return new BaseResponse<IList<JobsModel>> (false, $"Nenhum registro encontrado na pagina {page}");
+                return new BaseResponse<List<JobsModel>> (false, $"Nenhum registro encontrado na pagina {page}");
 
             var jobs = htmlDoc.DocumentNode.SelectNodes (
                     @" //div[@class='list-title']/a")
@@ -57,19 +57,19 @@ namespace Crawler_ItJobs_Portugal.Services
                         Titulo = titulo,
                         Pagina = page
                 });
-                
+
             }
 
             if (result != null)
                 result.ForEach (x => IncluirEmailsVaga (x));
 
-            return new BaseResponse<IList<JobsModel>> (result);
+            return new BaseResponse<List<JobsModel>> (result);
         }
 
         private JobsModel IncluirEmailsVaga (JobsModel job)
         {
-            var rnd = new Random ().Next (5, 20);
-            System.Threading.Thread.Sleep (rnd * 100);
+            var rnd = new Random ().Next (3, 10); 
+            System.Threading.Thread.Sleep (rnd * 100); // Pausa randomica para evitar bloqueio de robo (Nao cheguei a confirmar se o site bloqueia muitos requests)
 
             var uri = new Uri (job.Url);
 
@@ -100,8 +100,7 @@ namespace Crawler_ItJobs_Portugal.Services
                     var email = Helpers.MailDecoder.cfDecodeEmail (valueMailEncoded.Value);
                     var conteudo = $"{DateTime.Now} Pagina: {job.Pagina}  Titulo: {job.Titulo}  Url: {job.Url}  Email: {email}{Environment.NewLine}";
                     Console.WriteLine (conteudo);
-                    System.IO.File.AppendAllText ($@"C:\JobsCrawler\Teste.txt", conteudo);
-                    job.EmailsRelacionados.Add(email);
+                    job.EmailsRelacionados.Add (email);
                 }
             }
 

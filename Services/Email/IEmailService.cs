@@ -7,10 +7,10 @@ using Crawler_ItJobs_Portugal.Application.Base;
 using Crawler_ItJobs_Portugal.Models.Search;
 using RestSharp;
 
-namespace Crawler_ItJobs_Portugal.Services
+namespace Crawler_ItJobs_Portugal.Services.Email
 {
     public interface IEmailService
     {
-        void EnviarEmail (JobsModel job, List<string> emailsJaEnviados);
+        bool EnviarEmail (string targetMail, JobsModel job);
     }
 }

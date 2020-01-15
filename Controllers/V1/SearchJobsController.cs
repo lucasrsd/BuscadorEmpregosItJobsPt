@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Crawler_ItJobs_Portugal.Services;
+using Crawler_ItJobs_Portugal.Core.JobSearch;
+using Crawler_ItJobs_Portugal.Models.Search;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Crawler_ItJobs_Portugal.Controllers.V1
@@ -11,40 +10,24 @@ namespace Crawler_ItJobs_Portugal.Controllers.V1
     [ApiController]
     public class SearchJobsController : ControllerBase
     {
-        private readonly ISearchService SearchService;
-        private readonly IEmailService EmailService;
-        public SearchJobsController (ISearchService searchService, IEmailService emailService)
+        private readonly IJobSearchCore JobSearchCore;
+        public SearchJobsController (IJobSearchCore jobSearchCore)
         {
-            this.SearchService = searchService;
-            this.EmailService = emailService;
+            this.JobSearchCore = jobSearchCore;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Calcular ()
+        public async Task<IActionResult> Post ([FromBody] SearchJobModel searchJobModel)
         {
-            var lista = new List<object> ();
-            var listaEmails = new List<string> ();
-            for (int x = 3; x < 20; x++)
-            {
-                var result = this.SearchService.ListarVagasUrls (x);
+            Console.WriteLine ($"{DateTime.Now}  ** INICIADO ** -> Tag: {searchJobModel.Tag}, Pagina inicial: {searchJobModel.PageStart}, Pagina Final: {searchJobModel.PageEnd}");
+            var coreResult = this.JobSearchCore.SearchJobs (searchJobModel);
 
-                lista.Add (result);
-                foreach (var item in result.Data)
-                {
-                    this.EmailService.EnviarEmail (item, listaEmails);
+            Console.WriteLine ($"{DateTime.Now}  ** FINALIZADO ** -> Tag: {searchJobModel.Tag}, Pagina inicial: {searchJobModel.PageStart}, Pagina Final: {searchJobModel.PageEnd}");
 
-                    // ToDo - Arrumar isto
-                    // foreach (var dadosEmail in result.Data)
-                    // {
-                    //     if (dadosEmail.EmailsRelacionados != null && dadosEmail.EmailsRelacionados.Any ())
-                    //     {
-                    //         listaEmails.Add (dadosEmail.EmailsRelacionados.FirstOrDefault ());
-                    //     }
-                    // }
-                }
-            }
-
-            return Ok (lista);
+            if (coreResult.Ok)
+                return Ok (coreResult);
+            else
+                return BadRequest (coreResult);
         }
     }
 }
