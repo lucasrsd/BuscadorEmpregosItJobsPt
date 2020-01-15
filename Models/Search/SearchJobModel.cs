@@ -10,9 +10,11 @@ namespace Crawler_ItJobs_Portugal.Models.Search
         public string Tag { get; set; }
 
         [Required]
+        [Range (1, int.MaxValue)]
         public int PageStart { get; set; }
 
         [Required]
+        [Range (1, int.MaxValue)]
         public int PageEnd { get; set; }
     }
 }

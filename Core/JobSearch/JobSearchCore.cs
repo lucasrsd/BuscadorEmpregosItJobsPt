@@ -19,10 +19,27 @@ namespace Crawler_ItJobs_Portugal.Core.JobSearch
             this.EmailService = emailService;
         }
 
+        private BaseResponse<bool> Valid (SearchJobModel model)
+        {
+            if (model.PageStart > model.PageEnd)
+                return new BaseResponse<bool> (false, "Pagina de inicio maior que pagina final");
+
+            if (string.IsNullOrEmpty (model.Tag))
+                return new BaseResponse<bool> (false, "Tag vazia");
+
+            return new BaseResponse<bool> (true);
+        }
+
         public BaseResponse<SearchJobResult> SearchJobs (SearchJobModel searchJobModel)
         {
+            var modelValid = Valid (searchJobModel);
+
+            if (!modelValid.Data)
+                return new BaseResponse<SearchJobResult> (false, modelValid.ErrorMessage);
+
             var jobList = new List<JobsModel> ();
             var successMailsList = new List<bool> ();
+            
             for (int page = searchJobModel.PageStart; page <= searchJobModel.PageEnd; page++)
             {
                 var result = this.SearchService.BuscarVagasPagina (searchJobModel.Tag, page);
